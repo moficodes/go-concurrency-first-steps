@@ -11,7 +11,9 @@ import (
 var wg sync.WaitGroup
 
 func main() {
+	// fmt.Printf("%#v\n", wg)
 	wg.Add(2)
+	// fmt.Printf("%#v\n", wg)
 	go func() {
 		// defer wg.Done()
 		fmt.Println("Hello Closure")
@@ -20,7 +22,9 @@ func main() {
 
 	go print("Hello Function")
 
+	// fmt.Printf("%#v\n", wg)
 	wg.Wait()
+	// fmt.Printf("%#v\n", wg)
 	fmt.Println(runtime.NumGoroutine())
 }
 

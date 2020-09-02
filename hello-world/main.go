@@ -5,7 +5,7 @@ import (
 	"runtime"
 )
 
-// go run main.go
+// go run main.go.go
 // without un commenting line 16 this code wont do anything.
 func main() {
 	go func() {
@@ -17,7 +17,7 @@ func main() {
 	// time.Sleep(1 * time.Second)
 	// time.Sleep(25 * time.Microsecond)
 
-	// main function exits here.
+	// main.go function exits here.
 	// and which exits the context
 	// this methods lets us see the number of goroutines in context right now.
 	// run this code with and without the sleep and see if that number is any different.

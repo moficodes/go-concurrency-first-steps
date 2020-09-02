@@ -13,9 +13,9 @@ var wg sync.WaitGroup
 func main() {
 	wg.Add(2)
 	go func() {
-		defer wg.Done()
+		// defer wg.Done()
 		fmt.Println("Hello Closure")
-		// wg.Done()
+		wg.Done()
 	}()
 
 	go print("Hello Function")
@@ -25,7 +25,7 @@ func main() {
 }
 
 func print(message string) {
-	defer wg.Done()
+	// defer wg.Done()
 	fmt.Println(message)
-	// wg.Done()
+	wg.Done()
 }

@@ -7,16 +7,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 	"sync"
 )
 
 var wg sync.WaitGroup
 
-func init() {
-	runtime.GOMAXPROCS(1)
-}
+//func init() {
+//	runtime.GOMAXPROCS(1)
+//}
 
 func main() {
 	run()

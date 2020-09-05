@@ -56,11 +56,11 @@ func loadUrls(filename string) ([]string, error) {
 	return strings.Split(data, "\n"), nil
 }
 
-func downloadFile(URL string) error {
+func downloadFile(URL string) {
 	defer wg.Done()
 	res, err := http.Get(URL)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	defer res.Body.Close()
 
@@ -69,14 +69,12 @@ func downloadFile(URL string) error {
 	folderName := "images/"
 	file, err := os.Create(folderName + fileName)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	defer file.Close()
 
 	_, err = io.Copy(file, res.Body)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
-
-	return nil
 }

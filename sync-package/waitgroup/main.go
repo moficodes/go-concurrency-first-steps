@@ -21,7 +21,7 @@ type WaitGroup struct {
 	// for the sema.
 	state1 [3]uint32
 }
- */
+*/
 
 func main() {
 	// fmt.Printf("%#v\n", wg)
@@ -32,6 +32,7 @@ func main() {
 		// defer wg.Done()
 		fmt.Println("Hello Closure")
 		wg.Done()
+		//wg.Done()
 	}()
 
 	go print("Hello Function")

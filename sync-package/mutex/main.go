@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
 type data struct {
 	val int
-	mux sync.Mutex
+	//mux sync.Mutex
 }
 
 func main() {

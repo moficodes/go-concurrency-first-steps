@@ -13,9 +13,13 @@ func main() {
 }
 
 func send(c chan<- int) {
+	//d := <-c
+
 	c <- 1
 }
 
 func receive(c <-chan int) int {
+	//c <- 1
+	//close(c)
 	return <-c
 }

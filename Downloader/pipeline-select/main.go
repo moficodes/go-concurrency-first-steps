@@ -39,32 +39,43 @@ func run() {
 
 	urlChan := make(chan string)
 	downloadChan := make(chan fileContent)
-	done := make(chan interface{})
-
-	go func(urls <-chan string, content chan<- fileContent) {
-		for url := range urls {
-			content <- downloadFile(url)
-		}
-		close(content)
-	}(urlChan, downloadChan)
-
-	go func(contents <-chan fileContent, done chan<- interface{}) {
-		for content := range contents {
-			writeFile(content)
-		}
-		close(done)
-	}(downloadChan, done)
 
 	go func(urlChan chan<- string) {
 		for _, url := range urls {
 			urlChan <- url
 		}
-		close(urlChan)
 	}(urlChan)
 
+	var wg sync.WaitGroup
+	wg.Add(2 * len(urls))
+	go func() {
+		for {
+			select {
+			case url := <-urlChan:
+				go download(downloadChan, url, &wg)
+			case content := <-downloadChan:
+				go write(content, &wg)
+			}
+		}
+	}()
+
 	fmt.Println("Downloading: ")
-	<-done
+	wg.Wait()
 	fmt.Println("Done!")
+}
+
+func download(out chan<- fileContent, URL string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	out <- downloadFile(URL)
+}
+
+func write(content fileContent, wg *sync.WaitGroup) {
+	defer wg.Done()
+	writeFile(content)
+}
+
+func checkFolder(folder string, count int) {
+
 }
 
 func setup(folder string) error {

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -27,6 +26,11 @@ func main() {
 var c *sync.Cond
 var buffer []bool
 
+type fileContent struct {
+	body io.ReadCloser
+	url  string
+}
+
 func run() {
 	if err := setup("images"); err != nil {
 		log.Fatal(err)
@@ -37,21 +41,33 @@ func run() {
 		log.Fatal(err)
 	}
 
-	routineLimit := 5 * runtime.GOMAXPROCS(-1)
+	urlChan := make(chan string)
+	downloadChan := make(chan fileContent)
+	done := make(chan interface{})
+
+	go func(urls <-chan string, content chan<- fileContent) {
+		for url := range urls {
+			content <- downloadFile(url)
+		}
+		close(content)
+	}(urlChan, downloadChan)
+
+	go func(contents <-chan fileContent, done chan<- interface{}) {
+		for content := range contents {
+			writeFile(content)
+		}
+		close(done)
+	}(downloadChan, done)
+
+	go func(urlChan chan<- string) {
+		for _, url := range urls {
+			urlChan <- url
+		}
+		close(urlChan)
+	}(urlChan)
 
 	fmt.Println("Downloading: ")
-	wg.Add(len(urls))
-	for _, url := range urls {
-		c.L.Lock()
-		for len(buffer) == routineLimit {
-			c.Wait()
-		}
-		buffer = append(buffer, true)
-		go downloadFile(url)
-		c.L.Unlock()
-	}
-
-	wg.Wait()
+	<-done
 	fmt.Println("Done!")
 }
 
@@ -107,30 +123,35 @@ func loadUrls(filename string) ([]string, error) {
 	return strings.Split(data, "\n"), nil
 }
 
-func downloadFile(URL string) {
-	defer wg.Done()
+func downloadFile(URL string) fileContent {
 	res, err := http.Get(URL)
 	if err != nil {
 		log.Println(err)
 	}
-	defer res.Body.Close()
+	return fileContent{body: res.Body, url: URL}
+}
 
-	urlParts := strings.Split(URL, "/")
+func writeFile(content fileContent) error {
+	defer content.body.Close()
+	urlParts := strings.Split(content.url, "/")
 	fileName := urlParts[len(urlParts)-1]
 	folderName := "images/"
 	file, err := os.Create(folderName + fileName)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	defer file.Close()
 
-	_, err = io.Copy(file, res.Body)
+	_, err = io.Copy(file, content.body)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
-
-	c.L.Lock()
-	buffer = buffer[1:]
-	c.L.Unlock()
-	c.Signal()
+	return nil
 }
+
+/*
+time go run main.go
+Downloading:
+Done!
+go run main.go  10.94s user 10.74s system 5% cpu 6:54.86 total
+*/

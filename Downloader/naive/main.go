@@ -27,7 +27,7 @@ func run() {
 
 	errs := make([]error, 0)
 
-	printInterval := len(urls) / 50
+	printInterval := len(urls)/50 + 1
 
 	fmt.Print("Downloading: [")
 	for i, url := range urls {
@@ -121,3 +121,10 @@ func downloadFile(URL string) error {
 
 	return nil
 }
+
+/*
+time go run main.go
+Downloading: [==================================================]
+Done!
+go run main.go  11.63s user 11.41s system 5% cpu 7:39.06 total
+*/

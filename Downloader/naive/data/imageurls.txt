@@ -18,8 +18,8 @@ https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destinatio
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-abadan-iran-018.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-abadan-iran-019.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-abadan-iran-020.jpg
-https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-001.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-002.jpg
+https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-001.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-003.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-004.jpg
 https://s3.us.cloud-object-storage.appdomain.cloud/bee-travels-assets-destination/destination-accra-ghana-005.jpg

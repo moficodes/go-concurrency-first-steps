@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 )
@@ -40,6 +41,9 @@ func run() {
 	urlChan := make(chan string)
 	downloadChan := make(chan fileContent)
 
+	downloadSema := make(chan int, 3*runtime.GOMAXPROCS(-1))
+	fileWriteSema := make(chan int, 3*runtime.GOMAXPROCS(-1))
+
 	go func(urlChan chan<- string) {
 		for _, url := range urls {
 			urlChan <- url
@@ -52,9 +56,9 @@ func run() {
 		for {
 			select {
 			case url := <-urlChan:
-				go download(downloadChan, url, &wg)
+				go download(downloadChan, url, &wg, downloadSema)
 			case content := <-downloadChan:
-				go write(content, &wg)
+				go write(content, &wg, fileWriteSema)
 			}
 		}
 	}()
@@ -64,14 +68,18 @@ func run() {
 	fmt.Println("Done!")
 }
 
-func download(out chan<- fileContent, URL string, wg *sync.WaitGroup) {
+func download(out chan<- fileContent, URL string, wg *sync.WaitGroup, sema chan int) {
+	sema <- 0
 	defer wg.Done()
 	out <- downloadFile(URL)
+	<-sema
 }
 
-func write(content fileContent, wg *sync.WaitGroup) {
+func write(content fileContent, wg *sync.WaitGroup, sema chan int) {
+	sema <- 0
 	defer wg.Done()
 	writeFile(content)
+	<-sema
 }
 
 func checkFolder(folder string, count int) {

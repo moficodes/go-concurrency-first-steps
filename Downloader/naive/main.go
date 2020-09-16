@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,6 +16,9 @@ func main() {
 }
 
 func run() {
+	if err := setup("images"); err != nil {
+		log.Fatal(err)
+	}
 	dataFile := "data/imageurls.txt"
 	urls, err := loadUrls(dataFile)
 	if err != nil {
@@ -40,6 +44,40 @@ func run() {
 	for _, err := range errs {
 		log.Println(err)
 	}
+}
+
+func setup(folder string) error {
+	if err := cleanup(folder); err != nil {
+		return err
+	}
+	if err := createFolder(folder); err != nil {
+		return err
+	}
+	return nil
+}
+
+// we will run this before every run so that our directory gets cleaned up
+func cleanup(dir string) error {
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return err
+		}
+	}
+	d.Close()
+	return os.RemoveAll(dir)
+}
+
+func createFolder(folder string) error {
+	return os.Mkdir(folder, 0755)
 }
 
 func loadUrls(filename string) ([]string, error) {

@@ -6,7 +6,7 @@ import (
 )
 
 // go run main.go.go
-// without un commenting line 16 this code wont do anything.
+// without un commenting line 17 this code wont do anything.
 func main() {
 	go func() {
 		fmt.Println("Hello Closure")
